@@ -1,30 +1,63 @@
 const pool = require('../config/db');
 
 // 전체 포스트 조회 (타임라인) - 페이징 지원
-exports.findAll = async (currentUserId = null, page = 1, limit = 20) => {
-    const offset = (page - 1) * limit;
+exports.findAll = async (
+    currentUserId = null,
+    page = 1,
+    limit = 20,
+    filters = {}
+) => {
+    const safePage = Number(page) || 1;
+    const safeLimit = Number(limit) || 20;
+    const offset = (safePage - 1) * safeLimit;
 
-    const query = `
+    const params = [];
+
+    let query = `
     SELECT
       t.*,
       u.nickname,
       u.profile_image_id,
-      (SELECT COUNT(*) FROM likes WHERE post_id = t.id) as like_count,
-      ${currentUserId ? '(SELECT COUNT(*) FROM likes WHERE post_id = t.id AND user_id = ?) as is_liked' : '0 as is_liked'}
+      (SELECT COUNT(*) FROM likes WHERE post_id = t.id) AS like_count,
+      ${currentUserId
+            ? '(SELECT COUNT(*) FROM likes WHERE post_id = t.id AND user_id = ?) AS is_liked'
+            : '0 AS is_liked'
+        }
     FROM posts t
     JOIN users u ON t.user_id = u.id
-    ORDER BY t.created_at DESC
-    LIMIT ? OFFSET ?
+    WHERE 1=1
   `;
 
-    const params = currentUserId ? [currentUserId, limit, offset] : [limit, offset];
+    if (currentUserId) {
+        params.push(Number(currentUserId));
+    }
+
+    if (filters?.dorm_type) {
+        query += ' AND t.dorm_type = ?';
+        params.push(filters.dorm_type);
+    }
+
+    // 🔥 LIMIT / OFFSET은 바인딩하지 않음
+    query += ` ORDER BY t.created_at DESC LIMIT ${safeLimit} OFFSET ${offset}`;
+
     const [rows] = await pool.execute(query, params);
     return rows;
 };
 
+
 // 전체 포스트 수 조회
-exports.countAll = async () => {
-    const [rows] = await pool.execute('SELECT COUNT(*) as total FROM posts');
+exports.countAll = async (filters) => {
+    let query = "SELECT COUNT(*) as count FROM posts WHERE 1=1";
+    const params = [];
+
+    if (filters.dorm_type) {
+        query += " AND dorm_type = ?";
+        params.push(filters.dorm_type);
+    }
+    // ... findAll과 동일한 필터 로직 적용
+
+    const [rows] = await pool.execute(query, params);
+    //const [rows] = await pool.execute('SELECT COUNT(*) as total FROM posts');
     return rows[0].total;
 };
 

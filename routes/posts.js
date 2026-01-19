@@ -25,6 +25,9 @@ router.post('/', authMiddleware, postController.createPost);
 // 트윗 삭제 - 로그인 필수
 router.delete('/:id', authMiddleware, postController.deletePost);
 
+// 특정 글 조회 - 로그인 필수
+router.get('/:id', authMiddleware, postController.viewPost);
+
 // 좋아요 토글 - 로그인 필수
 router.post('/:id/like', authMiddleware, postController.toggleLike);
 

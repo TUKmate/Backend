@@ -24,6 +24,11 @@ exports.getMyProfile = async (req, res) => {
                 id: user.id,
                 username: user.username,
                 nickname: user.nickname,
+                major: user.major,
+                year: user.year,
+                dorm_type: user.dorm_type,
+                sex: user.sex,
+                age: user.age,
                 profile_image_id: user.profile_image_id,
                 profile_image: getImageUrl(user.profile_image_id),
                 created_at: user.created_at,
@@ -36,7 +41,7 @@ exports.getMyProfile = async (req, res) => {
     }
 };
 
-// 내 트윗 조회
+// 내 게시글 조회
 exports.getMyPosts = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -72,6 +77,11 @@ exports.getUserProfile = async (req, res) => {
             id: user.id,
             username: user.username,
             nickname: user.nickname,
+            major: user.major,
+            year: user.year,
+            dorm_type: user.dorm_type,
+            sex: user.sex,
+            age: user.age,
             profile_image: getImageUrl(user.profile_image_id),
             created_at: user.created_at,
             post_count: postCount
@@ -113,7 +123,8 @@ exports.getUserPosts = async (req, res) => {
 exports.updateProfile = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { nickname, profileImageId } = req.body;
+        const { nickname, major, year, dorm_type, sex, age, profileImageId } = req.body;
+
 
         // 프로필 이미지 ID 검증 (있으면)
         if (profileImageId !== undefined && profileImageId !== null) {
@@ -130,7 +141,7 @@ exports.updateProfile = async (req, res) => {
             return res.status(400).json({ message: '수정할 내용이 없습니다' });
         }
 
-        await userModel.update(userId, { nickname, profileImageId });
+        await userModel.update(userId, { nickname, major, year, dorm_type, sex, age, profileImageId });
         const user = await userModel.findById(userId);
 
         res.json({
@@ -138,6 +149,11 @@ exports.updateProfile = async (req, res) => {
                 id: user.id,
                 username: user.username,
                 nickname: user.nickname,
+                major: user.major,
+                year: user.year,
+                dorm_type: user.dorm_type,
+                sex: user.sex,
+                age: user.age,
                 profile_image_id: user.profile_image_id,
                 profile_image: getImageUrl(user.profile_image_id),
                 created_at: user.created_at

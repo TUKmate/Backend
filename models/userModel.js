@@ -22,7 +22,7 @@ exports.findByUsername = async (username) => {
 exports.findById = async (id) => {
     const [rows] = await pool.execute(`
     SELECT
-      u.id, u.username, u.nickname, u.profile_image_id, u.created_at,
+      u.id, u.username, u.nickname, u.major, u.year, u.dorm_type, u.sex, u.age, u.profile_image_id, u.created_at,
       f.id as file_id
     FROM users u
     LEFT JOIN files f ON u.profile_image_id = f.id
@@ -35,7 +35,7 @@ exports.findById = async (id) => {
 exports.findByNickname = async (nickname) => {
     const [rows] = await pool.execute(`
     SELECT
-      u.id, u.username, u.nickname, u.profile_image_id, u.created_at,
+      u.id, u.username, u.nickname, u.major, u.year, u.dorm_type, u.sex, u.age, u.profile_image_id, u.created_at,
       f.id as file_id
     FROM users u
     LEFT JOIN files f ON u.profile_image_id = f.id
@@ -61,6 +61,31 @@ exports.update = async (id, data) => {
     if (data.nickname !== undefined) {
         updates.push('nickname = ?');
         values.push(data.nickname);
+    }
+
+    if (data.major !== undefined) {
+        updates.push('major = ?');
+        values.push(data.major);
+    }
+
+    if (data.year !== undefined) {
+        updates.push('year = ?');
+        values.push(data.year);
+    }
+
+    if (data.dorm_type !== undefined) {
+        updates.push('dorm_type = ?');
+        values.push(data.dorm_type);
+    }
+
+    if (data.sex !== undefined) {
+        updates.push('sex = ?');
+        values.push(data.sex);
+    }
+
+    if (data.age !== undefined) {
+        updates.push('age = ?');
+        values.push(data.age);
     }
 
     if (data.profileImageId !== undefined) {

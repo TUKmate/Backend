@@ -14,8 +14,12 @@ exports.getAllPosts = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
 
-        const posts = await postModel.findAll(currentUserId, page, limit);
-        const total = await postModel.countAll();
+        const filters = {
+            dorm_type: req.query.dorm_type
+        };
+
+        const posts = await postModel.findAll(currentUserId, page, limit, filters);
+        const total = await postModel.countAll(filters);
         const hasMore = page * limit < total;
 
         res.json({
@@ -130,6 +134,23 @@ exports.createPost = async (req, res) => {
         res.status(500).json({ message: '서버 오류가 발생했습니다' });
     }
 };
+
+exports.viewPost = async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const post = await postModel.findByIdWithUser(postId);
+
+        res.json({
+            data: {
+                ...post,
+                is_liked: !!post.is_liked,
+            },
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: '서버 오류가 발생했습니다' });
+    }
+}
 
 // 트윗 삭제
 exports.deletePost = async (req, res) => {
