@@ -32,10 +32,18 @@ exports.findAll = async (
         params.push(Number(currentUserId));
     }
 
-    if (filters?.dorm_type) {
-        query += ' AND t.dorm_type = ?';
-        params.push(filters.dorm_type);
-    }
+    //if (filters?.dorm_type) {
+    //    query += ' AND t.dorm_type = ?';
+    //    params.push(filters.dorm_type);
+    //}
+
+    Object.entries(filters).forEach(([key, value]) => {
+        if (value !== null) {
+            query += ` AND t.${key} = ?`;
+            params.push(value);
+        }
+    });
+
 
     // 🔥 LIMIT / OFFSET은 바인딩하지 않음
     query += ` ORDER BY t.created_at DESC LIMIT ${safeLimit} OFFSET ${offset}`;

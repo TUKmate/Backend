@@ -15,7 +15,26 @@ exports.getAllPosts = async (req, res) => {
         const limit = parseInt(req.query.limit) || 20;
 
         const filters = {
-            dorm_type: req.query.dorm_type
+            dorm_type: req.query.dorm_type ?? null,
+            mbti_ie: req.query.mbti_ie ?? null,
+            mbti_ns: req.query.mbti_ns ?? null,
+            mbti_ft: req.query.mbti_ft ?? null,
+            mbti_jp: req.query.mbti_jp ?? null,
+            birth_year: req.query.birth_year ? Number(req.query.birth_year) : null,
+            enrollment_year: req.query.enrollment_year ? Number(req.query.enrollment_year) : null,
+            sleep_start: req.query.sleep_start ?? null,
+            sleep_end: req.query.sleep_end ?? null,
+            smoking: req.query.smoking ?? null,
+            bug: req.query.bug ?? null,
+            shower_style: req.query.shower_style ?? null,
+            shower_duration: req.query.shower_duration ?? null,
+            sleep_sensitivity: req.query.sleep_sensitivity ?? null,
+            home_visit_cycle: req.query.home_visit_cycle ?? null,
+            sleep_habits: req.query.sleep_habits ?? null,
+            game: req.query.game ?? null,
+            cleanliness: req.query.cleanliness ?? null,
+            discord: req.query.discord ?? null,
+            invite_friends: req.query.invite_friends ?? null,
         };
 
         const posts = await postModel.findAll(currentUserId, page, limit, filters);
